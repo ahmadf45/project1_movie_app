@@ -46,13 +46,19 @@ dependencies:
 
   dio: ^4.0.6
 
+  email_validator: ^2.0.1
+
+  firebase_auth: ^3.3.19
   firebase_core: ^1.18.0
   flutter_bloc: ^8.0.1
+  flutter_easyloading: ^3.0.5
   flutter_native_splash: ^2.2.3+1
 
   google_fonts: ^3.0.1
 
   page_transition: ^2.0.9
+
+  shared_preferences: ^2.0.15
   
 
 dev_dependencies:

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:project1_movie_app/config/variables.dart';
 
 class SplashPage extends StatefulWidget {
@@ -12,8 +14,25 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      Navigator.pushReplacementNamed(context, "/login");
+    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+      if (user != null) {
+        print(user.uid);
+        Future.delayed(const Duration(milliseconds: 1500), () async {
+          await FirebaseAuth.instance.signOut();
+          await EasyLoading.showSuccess(
+            "Sign Out Successfull!",
+            duration: const Duration(seconds: 1),
+            dismissOnTap: false,
+          );
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.pushReplacementNamed(context, "/login");
+          });
+        });
+      } else {
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          Navigator.pushReplacementNamed(context, "/login");
+        });
+      }
     });
   }
 

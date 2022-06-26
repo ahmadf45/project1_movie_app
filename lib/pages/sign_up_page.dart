@@ -8,21 +8,21 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:project1_movie_app/bloc/bloc_auth.dart';
 import 'package:project1_movie_app/config/variables.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   final focusEmail = FocusNode();
   final focusPassword = FocusNode();
 
-  _signIn() async {
+  _signUp(BuildContext context) async {
     if (_emailController.text == '') {
       FocusScope.of(context).requestFocus(focusEmail);
     } else if (_passwordController.text == '') {
@@ -30,13 +30,18 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       final bool emailIsValid = EmailValidator.validate(_emailController.text);
       if (emailIsValid) {
-        AuthClass().signInEmailPassword(
+        final bool isSuccess = await AuthClass().signUpEmailPassword(
             _emailController.text, _passwordController.text);
+        if (isSuccess) {
+          await EasyLoading.showSuccess("Sign Up Successed",
+              duration: const Duration(seconds: 1));
+          Navigator.pushReplacementNamed(context, "/login");
+        }
       } else {
-        EasyLoading.showError(
-          'Invalid Email',
-          duration: const Duration(milliseconds: 1000),
-        );
+        EasyLoading.showError('Invalid Email',
+            duration: const Duration(milliseconds: 1000),
+            maskType: EasyLoadingMaskType.custom);
+        // EasyLoading.showSuccess("SUKSES");
       }
     }
   }
@@ -66,10 +71,10 @@ class _LoginPageState extends State<LoginPage> {
                   height: 20,
                 ),
                 SizedBox(
-                  width: screenSize.width * 0.7,
+                  width: screenSize.width * 0.5,
                   child: FittedBox(
                     child: Text(
-                      "Welcome Back,",
+                      "Welcome,",
                       style: GoogleFonts.nunitoSans(
                         fontWeight: FontWeight.bold,
                       ),
@@ -79,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    "sign in to continue watching.",
+                    "sign up to continue watching.",
                     style: GoogleFonts.nunitoSans(),
                   ),
                 ),
@@ -166,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                               return null;
                             },
                             onFieldSubmitted: (value) {
-                              _signIn();
+                              _signUp(context);
                             },
                             cursorColor: primaryColor,
                             keyboardType: TextInputType.visiblePassword,
@@ -205,22 +210,17 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                GestureDetector(
-                  onTap: () {
-                    _signIn();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(500),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "LOGIN",
-                        style: GoogleFonts.nunitoSans(
-                            fontWeight: FontWeight.w800, fontSize: 16),
-                      ),
+                Container(
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(500),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "SIGN UP",
+                      style: GoogleFonts.nunitoSans(
+                          fontWeight: FontWeight.w800, fontSize: 16),
                     ),
                   ),
                 ),
@@ -232,20 +232,19 @@ class _LoginPageState extends State<LoginPage> {
                   child: RichText(
                     text: TextSpan(
                       children: [
+                        const TextSpan(
+                          text: "Already have an account? ",
+                        ),
                         TextSpan(
-                          text: "sign up,",
+                          text: "sign in here!",
                           style: GoogleFonts.nunitoSans(
                             fontWeight: FontWeight.w800,
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.pushReplacementNamed(
-                                  context, '/signUp');
+                              Navigator.pushReplacementNamed(context, '/login');
                             },
                         ),
-                        const TextSpan(
-                          text: " if you're new.",
-                        )
                       ],
                       style: GoogleFonts.nunitoSans(),
                     ),
