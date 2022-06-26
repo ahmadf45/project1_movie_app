@@ -1,12 +1,16 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project1_movie_app/bloc/bloc_auth.dart';
 import 'package:project1_movie_app/config/variables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -30,18 +34,19 @@ class _SignUpPageState extends State<SignUpPage> {
     } else {
       final bool emailIsValid = EmailValidator.validate(_emailController.text);
       if (emailIsValid) {
-        final bool isSuccess = await AuthClass().signUpEmailPassword(
+        final User? user = await AuthClass().signUpEmailPassword(
             _emailController.text, _passwordController.text);
-        if (isSuccess) {
-          await EasyLoading.showSuccess("Sign Up Successed",
-              duration: const Duration(seconds: 1));
-          Navigator.pushReplacementNamed(context, "/login");
+        if (user != null) {
+          dynamic param = ({
+            "user": user,
+          });
+          Navigator.pushReplacementNamed(context, '/register',
+              arguments: param);
         }
       } else {
         EasyLoading.showError('Invalid Email',
             duration: const Duration(milliseconds: 1000),
             maskType: EasyLoadingMaskType.custom);
-        // EasyLoading.showSuccess("SUKSES");
       }
     }
   }
@@ -210,17 +215,22 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.circular(500),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "SIGN UP",
-                      style: GoogleFonts.nunitoSans(
-                          fontWeight: FontWeight.w800, fontSize: 16),
+                GestureDetector(
+                  onTap: () {
+                    _signUp(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(500),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "SIGN UP",
+                        style: GoogleFonts.nunitoSans(
+                            fontWeight: FontWeight.w800, fontSize: 16),
+                      ),
                     ),
                   ),
                 ),

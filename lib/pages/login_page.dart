@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
@@ -30,8 +30,19 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       final bool emailIsValid = EmailValidator.validate(_emailController.text);
       if (emailIsValid) {
-        AuthClass().signInEmailPassword(
+        final user = await AuthClass().signInEmailPassword(
             _emailController.text, _passwordController.text);
+        if (user != null) {
+          if (user.displayName != null) {
+            Navigator.pushReplacementNamed(context, '/home');
+          } else {
+            dynamic param = ({
+              "user": user,
+            });
+            Navigator.pushReplacementNamed(context, '/register',
+                arguments: param);
+          }
+        }
       } else {
         EasyLoading.showError(
           'Invalid Email',

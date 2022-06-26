@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project1_movie_app/bloc/bloc_auth.dart';
 import 'package:project1_movie_app/bloc/bloc_movie.dart';
 import 'package:project1_movie_app/models/movie_model.dart';
 import 'package:project1_movie_app/models/new_model.dart';
@@ -36,8 +37,11 @@ class HomePage extends StatelessWidget {
               },
             ),
             InkWell(
-              onTap: () {
-                MovieClass().getTopRated(context);
+              onTap: () async {
+                var res = await AuthClass().signOut();
+                if (res) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               },
               child: Container(
                 padding: EdgeInsets.all(20),

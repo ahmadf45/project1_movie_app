@@ -1,7 +1,10 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:project1_movie_app/config/variables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -11,29 +14,33 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  _checkCurrentUser() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print(user.uid);
+      Future.delayed(const Duration(milliseconds: 1500), () async {
+        if (user.displayName != null) {
+          Navigator.pushReplacementNamed(context, "/home");
+        } else {
+          dynamic param = ({
+            "user": user,
+          });
+          Navigator.pushReplacementNamed(context, '/register',
+              arguments: param);
+        }
+      });
+    } else {
+      print("User not logged in");
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        Navigator.pushReplacementNamed(context, "/login");
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-      if (user != null) {
-        print(user.uid);
-        Future.delayed(const Duration(milliseconds: 1500), () async {
-          await FirebaseAuth.instance.signOut();
-          await EasyLoading.showSuccess(
-            "Sign Out Successfull!",
-            duration: const Duration(seconds: 1),
-            dismissOnTap: false,
-          );
-          Future.delayed(const Duration(seconds: 1), () {
-            Navigator.pushReplacementNamed(context, "/login");
-          });
-        });
-      } else {
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          Navigator.pushReplacementNamed(context, "/login");
-        });
-      }
-    });
+    _checkCurrentUser();
   }
 
   @override

@@ -24,7 +24,7 @@ class MovieClass {
       inspect(res);
       if (res.statusCode == 200) {
         NewModel result = NewModel.fromJson(res.data);
-        inspect(result);
+        //inspect(result);
         return result;
       } else {
         print('Status Code : ${res.statusCode}');
