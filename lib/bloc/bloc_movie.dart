@@ -17,10 +17,10 @@ class BlocMovie extends Cubit<NewModel?> {
 class MovieClass {
   Dio dio = Dio();
 
-  Future<NewModel?> getTopRated(BuildContext context) async {
+  Future<NewModel?> getTopRated(BuildContext context, int page) async {
     try {
       Response res = await dio.get(
-          'https://api.themoviedb.org/3/movie/top_rated?api_key=76885b738fab413af29618ee00c1967d&language=en-US&page=500');
+          'https://api.themoviedb.org/3/movie/top_rated?api_key=76885b738fab413af29618ee00c1967d&language=en-US&page=$page');
       inspect(res);
       if (res.statusCode == 200) {
         NewModel result = NewModel.fromJson(res.data);

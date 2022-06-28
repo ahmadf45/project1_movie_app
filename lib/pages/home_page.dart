@@ -7,23 +7,34 @@ import 'package:project1_movie_app/bloc/bloc_auth.dart';
 import 'package:project1_movie_app/bloc/bloc_movie.dart';
 import 'package:project1_movie_app/models/movie_model.dart';
 import 'package:project1_movie_app/models/new_model.dart';
+import 'package:project1_movie_app/widgets/movie_card.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int page = 1;
+  @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("HOME PAGE"),
+        title: const Text("Movies"),
       ),
-      body: Center(
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        width: screenSize.width,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text("DATA"),
             FutureBuilder<NewModel?>(
-              future: MovieClass().getTopRated(context),
+              future: MovieClass().getTopRated(context, page),
               builder: (context, state) {
                 if (state.connectionState == ConnectionState.done) {
                   if (state.data!.results!.isEmpty) {
@@ -36,6 +47,7 @@ class HomePage extends StatelessWidget {
                 }
               },
             ),
+            MovieCard(),
             InkWell(
               onTap: () async {
                 var res = await AuthClass().signOut();
