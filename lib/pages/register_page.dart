@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project1_movie_app/bloc/bloc_auth.dart';
 import 'package:project1_movie_app/config/variables.dart';
@@ -46,190 +48,213 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: Container(
-            padding: const EdgeInsets.all(30),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: screenSize.width * 0.3,
-                  child: Image.asset("assets/images/logo2.png"),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  width: screenSize.width * 0.5,
-                  child: FittedBox(
-                    child: Text(
-                      "Haii,",
-                      style: GoogleFonts.nunitoSans(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+    DateTime pre_backpress = DateTime.now();
+    return WillPopScope(
+      onWillPop: () async {
+        if (Platform.isAndroid) {
+          final timegap = DateTime.now().difference(pre_backpress);
+          final cantExit = timegap >= const Duration(seconds: 1);
+          pre_backpress = DateTime.now();
+          if (cantExit) {
+            //show snackbar
+            EasyLoading.showToast("Press Back button again to Exit",
+                toastPosition: EasyLoadingToastPosition.bottom,
+                duration: const Duration(seconds: 1));
+            return false; // false will do nothing when back press
+          } else {
+            return true; // true will exit the app
+          }
+        } else {
+          return true;
+        }
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(30),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: screenSize.width * 0.3,
+                    child: Image.asset("assets/images/logo2.png"),
                   ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    "register your data to continue watching.",
-                    style: GoogleFonts.nunitoSans(),
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                const Spacer(),
-                SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Color.fromARGB(255, 122, 122, 122),
-                            ),
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: screenSize.width,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Email cant be null';
-                              }
-                              return null;
-                            },
-                            cursorColor: primaryColor,
-                            focusNode: focusName,
-                            keyboardType: TextInputType.text,
-                            controller: _nameController,
-                            textInputAction: TextInputAction.next,
-                            style: GoogleFonts.nunitoSans(
-                                color: primaryTextColor,
-                                fontWeight: FontWeight.w700),
-                            decoration: InputDecoration(
-                              hintText: 'Your Name',
-                              hintStyle: GoogleFonts.nunitoSans(
-                                  color: primaryTextColor,
-                                  fontWeight: FontWeight.normal),
-                              border: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.white12)),
-                              enabledBorder: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.white12)),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: primaryColor)),
-                              errorBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent)),
-                              errorStyle: const TextStyle(color: Colors.pink),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Color.fromARGB(255, 122, 122, 122),
-                            ),
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: screenSize.width,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Password cant be null';
-                              }
-                              return null;
-                            },
-                            onFieldSubmitted: (value) {
-                              _register();
-                            },
-                            cursorColor: primaryColor,
-                            focusNode: focusPhone,
-                            keyboardType: TextInputType.phone,
-                            textInputAction: TextInputAction.go,
-                            controller: _phoneController,
-                            style: GoogleFonts.nunitoSans(
-                                color: primaryTextColor,
-                                fontWeight: FontWeight.w700),
-                            decoration: InputDecoration(
-                              hintText: 'Your phone number',
-                              hintStyle: GoogleFonts.nunitoSans(
-                                  color: primaryTextColor,
-                                  fontWeight: FontWeight.normal),
-                              border: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.white12)),
-                              enabledBorder: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.white12)),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: primaryColor)),
-                              errorBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.transparent)),
-                              errorStyle: const TextStyle(color: Colors.pink),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    _register();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(500),
-                    ),
-                    child: Center(
+                  SizedBox(
+                    width: screenSize.width * 0.5,
+                    child: FittedBox(
                       child: Text(
-                        "REGISTER",
+                        "Haii,",
                         style: GoogleFonts.nunitoSans(
-                            fontWeight: FontWeight.w800, fontSize: 16),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const Spacer(
-                  flex: 4,
-                ),
-              ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      "register your data to continue watching.",
+                      style: GoogleFonts.nunitoSans(),
+                    ),
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Color.fromARGB(255, 122, 122, 122),
+                              ),
+                            ),
+                          ),
+                          child: SizedBox(
+                            width: screenSize.width,
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Email cant be null';
+                                }
+                                return null;
+                              },
+                              cursorColor: primaryColor,
+                              focusNode: focusName,
+                              keyboardType: TextInputType.text,
+                              controller: _nameController,
+                              textInputAction: TextInputAction.next,
+                              style: GoogleFonts.nunitoSans(
+                                  color: primaryTextColor,
+                                  fontWeight: FontWeight.w700),
+                              decoration: InputDecoration(
+                                hintText: 'Your Name',
+                                hintStyle: GoogleFonts.nunitoSans(
+                                    color: primaryTextColor,
+                                    fontWeight: FontWeight.normal),
+                                border: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white12)),
+                                enabledBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white12)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: primaryColor)),
+                                errorBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                errorStyle: const TextStyle(color: Colors.pink),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Color.fromARGB(255, 122, 122, 122),
+                              ),
+                            ),
+                          ),
+                          child: SizedBox(
+                            width: screenSize.width,
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password cant be null';
+                                }
+                                return null;
+                              },
+                              onFieldSubmitted: (value) {
+                                _register();
+                              },
+                              cursorColor: primaryColor,
+                              focusNode: focusPhone,
+                              keyboardType: TextInputType.phone,
+                              textInputAction: TextInputAction.go,
+                              controller: _phoneController,
+                              style: GoogleFonts.nunitoSans(
+                                  color: primaryTextColor,
+                                  fontWeight: FontWeight.w700),
+                              decoration: InputDecoration(
+                                hintText: 'Your phone number',
+                                hintStyle: GoogleFonts.nunitoSans(
+                                    color: primaryTextColor,
+                                    fontWeight: FontWeight.normal),
+                                border: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white12)),
+                                enabledBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.white12)),
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: primaryColor)),
+                                errorBorder: const UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                errorStyle: const TextStyle(color: Colors.pink),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      _register();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(500),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "REGISTER",
+                          style: GoogleFonts.nunitoSans(
+                              fontWeight: FontWeight.w800, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Spacer(
+                    flex: 4,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

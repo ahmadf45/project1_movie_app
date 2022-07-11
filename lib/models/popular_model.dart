@@ -1,17 +1,17 @@
-class NewModel {
+class PopularModel {
   int? page;
-  List<Results>? results;
+  List<PopularResults>? results;
   int? totalPages;
   int? totalResults;
 
-  NewModel({this.page, this.results, this.totalPages, this.totalResults});
+  PopularModel({this.page, this.results, this.totalPages, this.totalResults});
 
-  NewModel.fromJson(Map<String, dynamic> json) {
+  PopularModel.fromJson(Map<String, dynamic> json) {
     page = json['page'];
     if (json['results'] != null) {
-      results = <Results>[];
+      results = <PopularResults>[];
       json['results'].forEach((v) {
-        results!.add(new Results.fromJson(v));
+        results!.add(new PopularResults.fromJson(v));
       });
     }
     totalPages = json['total_pages'];
@@ -30,7 +30,7 @@ class NewModel {
   }
 }
 
-class Results {
+class PopularResults {
   bool? adult;
   String? backdropPath;
   List<int>? genreIds;
@@ -46,7 +46,7 @@ class Results {
   double? voteAverage;
   int? voteCount;
 
-  Results(
+  PopularResults(
       {this.adult,
       this.backdropPath,
       this.genreIds,
@@ -62,7 +62,7 @@ class Results {
       this.voteAverage,
       this.voteCount});
 
-  Results.fromJson(Map<String, dynamic> json) {
+  PopularResults.fromJson(Map<String, dynamic> json) {
     adult = json['adult'];
     backdropPath = json['backdrop_path'];
     genreIds = json['genre_ids'].cast<int>();
@@ -75,7 +75,7 @@ class Results {
     releaseDate = json['release_date'];
     title = json['title'];
     video = json['video'];
-    voteAverage = json['vote_average'];
+    voteAverage = double.parse(json['vote_average'].toString());
     voteCount = json['vote_count'];
   }
 

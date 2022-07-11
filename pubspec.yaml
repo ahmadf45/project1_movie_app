@@ -40,9 +40,11 @@ dependencies:
   json_serializable: ^6.2.0
 
   # Packages
-  auto_animated: ^3.0.1
+  #auto_animated: ^3.0.0
 
   bloc: ^8.0.3
+
+  cached_network_image: ^3.2.1
 
   dio: ^4.0.6
 
@@ -59,6 +61,9 @@ dependencies:
   page_transition: ^2.0.9
 
   shared_preferences: ^2.0.15
+  shimmer: ^2.0.0
+
+  youtube_player_flutter: ^8.1.0
   
 
 dev_dependencies:
