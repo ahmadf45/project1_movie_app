@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MovieCardShimmer extends StatelessWidget {
@@ -44,6 +45,81 @@ class CasterCardShimmer extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(500),
         ),
+      ),
+    );
+  }
+}
+
+class GenreShimmer extends StatelessWidget {
+  const GenreShimmer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    return SizedBox(
+      width: screenSize.width * 0.6,
+      child: Shimmer.fromColors(
+        baseColor: const Color.fromARGB(255, 182, 180, 180),
+        highlightColor: const Color.fromARGB(255, 139, 139, 139),
+        enabled: true,
+        period: const Duration(milliseconds: 1000),
+        child: Container(
+          color: Colors.white,
+          width: double.infinity,
+          child: Text("_listGenre.join(', ')",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.nunitoSans(fontSize: 12, color: Colors.white)),
+        ),
+      ),
+    );
+  }
+}
+
+class DurationRatingShimmer extends StatelessWidget {
+  const DurationRatingShimmer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    return SizedBox(
+      width: screenSize.width,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: screenSize.width * 0.15,
+            child: Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 182, 180, 180),
+              highlightColor: const Color.fromARGB(255, 139, 139, 139),
+              enabled: true,
+              period: const Duration(milliseconds: 1000),
+              child: Container(
+                color: Colors.white,
+                width: double.infinity,
+                child: Text("_de",
+                    style: GoogleFonts.nunitoSans(
+                        fontSize: 15, color: Colors.white)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
+          SizedBox(
+            width: screenSize.width * 0.15,
+            child: Shimmer.fromColors(
+              baseColor: const Color.fromARGB(255, 182, 180, 180),
+              highlightColor: const Color.fromARGB(255, 139, 139, 139),
+              enabled: true,
+              period: const Duration(milliseconds: 1000),
+              child: Container(
+                color: Colors.white,
+                width: double.infinity,
+                child: Text("_det",
+                    style: GoogleFonts.nunitoSans(
+                        fontSize: 15, color: Colors.white)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -115,6 +191,24 @@ class DescriptionShimmer extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AvatarProfileShimmer extends StatelessWidget {
+  const AvatarProfileShimmer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: const Color.fromARGB(255, 182, 180, 180),
+      highlightColor: const Color.fromARGB(255, 139, 139, 139),
+      enabled: true,
+      period: const Duration(milliseconds: 1000),
+      child: const CircleAvatar(
+        radius: 70,
+        backgroundColor: Colors.white,
       ),
     );
   }

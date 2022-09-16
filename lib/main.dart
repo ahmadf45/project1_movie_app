@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:project1_movie_app/bloc/auth_bloc.dart';
 import 'package:project1_movie_app/config/router.dart';
 import 'package:project1_movie_app/config/variables.dart';
 import 'package:project1_movie_app/pages/error_page.dart';
@@ -37,24 +39,31 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Movie App',
-      initialRoute: '/',
-      onGenerateRoute: RouteGenerator.generateRoute,
-      onUnknownRoute: (RouteSettings setting) {
-        return MaterialPageRoute(builder: (context) => const ErrorPage());
-      },
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: bgColor,
-        primarySwatch: primaryColor,
-        appBarTheme: AppBarTheme(backgroundColor: bgColor),
-        textTheme: Theme.of(context).textTheme.apply(
-              bodyColor: primaryTextColor,
-              displayColor: primaryTextColor,
-            ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(),
+        )
+      ],
+      child: MaterialApp(
+        title: 'Movie App',
+        initialRoute: '/',
+        onGenerateRoute: RouteGenerator.generateRoute,
+        onUnknownRoute: (RouteSettings setting) {
+          return MaterialPageRoute(builder: (context) => const ErrorPage());
+        },
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: bgColor,
+          primarySwatch: primaryColor,
+          appBarTheme: AppBarTheme(backgroundColor: bgColor),
+          textTheme: Theme.of(context).textTheme.apply(
+                bodyColor: primaryTextColor,
+                displayColor: primaryTextColor,
+              ),
+        ),
+        builder: EasyLoading.init(),
       ),
-      builder: EasyLoading.init(),
     );
   }
 }

@@ -2,7 +2,9 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:project1_movie_app/bloc/auth_bloc.dart';
 import 'package:project1_movie_app/config/variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,16 +16,19 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  _checkCurrentUser() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      print(user.uid);
+  @override
+  void initState() {
+    super.initState();
+    AuthBloc authBloc = BlocProvider.of<AuthBloc>(context);
+
+    if (authBloc.state != null) {
+      print(authBloc.state!.uid);
       Future.delayed(const Duration(milliseconds: 1500), () async {
-        if (user.displayName != null) {
+        if (authBloc.state!.displayName != null) {
           Navigator.pushReplacementNamed(context, "/home");
         } else {
           dynamic param = ({
-            "user": user,
+            "user": authBloc.state,
           });
           Navigator.pushReplacementNamed(context, '/register',
               arguments: param);
@@ -35,12 +40,6 @@ class _SplashPageState extends State<SplashPage> {
         Navigator.pushReplacementNamed(context, "/login");
       });
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _checkCurrentUser();
   }
 
   @override

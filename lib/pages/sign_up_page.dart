@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:email_validator/email_validator.dart';
@@ -9,9 +8,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project1_movie_app/bloc/bloc_auth.dart';
+import 'package:project1_movie_app/controller/auth_class.dart';
 import 'package:project1_movie_app/config/variables.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -35,7 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } else {
       final bool emailIsValid = EmailValidator.validate(_emailController.text);
       if (emailIsValid) {
-        final User? user = await AuthClass().signUpEmailPassword(
+        final User? user = await AuthController().signUpEmailPassword(
             _emailController.text, _passwordController.text);
         if (user != null) {
           dynamic param = ({

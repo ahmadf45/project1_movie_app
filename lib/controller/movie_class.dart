@@ -2,7 +2,6 @@
 
 import 'dart:developer';
 
-import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:project1_movie_app/models/detail_video_model.dart';
@@ -18,7 +17,7 @@ import 'package:project1_movie_app/models/video_model.dart';
 //   NewModel? init;
 // }
 
-class MovieClass {
+class MovieController {
   Dio dio = Dio();
 
   Future<PopularModel?> getPopular(BuildContext context, int page) async {
@@ -119,7 +118,7 @@ class MovieClass {
         //inspect(res.data);
         try {
           VideoCasterModel result = VideoCasterModel.fromJson(res.data);
-          inspect(result);
+          //inspect(result);
           return result;
         } catch (ee) {
           print(ee);

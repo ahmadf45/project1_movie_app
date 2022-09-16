@@ -1,10 +1,16 @@
+// ignore_for_file: avoid_print
+
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project1_movie_app/bloc/bloc_movie.dart';
 import 'package:project1_movie_app/config/helper.dart';
+import 'package:project1_movie_app/config/variables.dart';
+import 'package:project1_movie_app/controller/movie_class.dart';
 import 'package:project1_movie_app/models/detail_video_model.dart';
 import 'package:project1_movie_app/models/popular_model.dart';
 import 'package:project1_movie_app/models/top_rated_model.dart';
@@ -13,6 +19,7 @@ import 'package:project1_movie_app/models/video_model.dart';
 import 'package:project1_movie_app/pages/player_page.dart';
 import 'package:project1_movie_app/widgets/caster_card.dart';
 import 'package:project1_movie_app/widgets/shimmering_widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailPage extends StatefulWidget {
   final String movieType;
@@ -34,9 +41,10 @@ class _DetailPageState extends State<DetailPage> {
   DetailVideoModel? _detailVideo;
   List<String?> _listGenre = [];
   VideoCasterModel? _videoCaster;
+  bool _isLiked = false;
 
   _getVideos() async {
-    var res = await MovieClass().getVideos(
+    var res = await MovieController().getVideos(
         context,
         widget.movieType == 'popular'
             ? widget.popularResults!.id
@@ -49,7 +57,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   _getDetail() async {
-    var res = await MovieClass().getDetailVideos(
+    var res = await MovieController().getDetailVideos(
         context,
         widget.movieType == 'popular'
             ? widget.popularResults!.id
@@ -62,11 +70,12 @@ class _DetailPageState extends State<DetailPage> {
           _listGenre.add(_detailVideo!.genres![i].name);
         }
       });
+      _getLiked();
     }
   }
 
   _getVideoCaster() async {
-    var res = await MovieClass().getVideoCaster(
+    var res = await MovieController().getVideoCaster(
         context,
         widget.movieType == 'popular'
             ? widget.popularResults!.id
@@ -78,14 +87,101 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+  _getLiked() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    String likesVideo = prefs.getString("likesVideo") ?? '';
+    if (likesVideo != '') {
+      Map<String, dynamic> jsonFile = jsonDecode(likesVideo);
+      List<DetailVideoModel?> listFile = [];
+
+      //find userId from saved json
+      if (jsonFile.containsKey(userId)) {
+        if (jsonFile[userId].length > 0) {
+          for (var i = 0; i < jsonFile[userId].length; i++) {
+            var ff = DetailVideoModel.fromJson(jsonFile[userId][i]);
+            listFile.add(ff);
+          }
+          var isContain = (listFile.singleWhere(
+                  (it) => it!.id == _detailVideo!.id,
+                  orElse: () => null)) !=
+              null;
+          if (isContain) {
+            setState(() {
+              _isLiked = true;
+            });
+          }
+        }
+      }
+    }
+  }
+
+  _functionLike() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    String likesVideo = prefs.getString("likesVideo") ?? '';
+    if (likesVideo == '') {
+      var newJson = {};
+      newJson[userId] = [];
+      newJson[userId].add(_detailVideo);
+      //inspect(newJson);
+      var savingJson = jsonEncode(newJson);
+      prefs.setString('likesVideo', savingJson);
+    } else {
+      Map<String, dynamic> jsonFile = jsonDecode(likesVideo);
+      List<DetailVideoModel?> listFile = [];
+      if (jsonFile[userId].length > 0) {
+        for (var i = 0; i < jsonFile[userId].length; i++) {
+          var ff = DetailVideoModel.fromJson(jsonFile[userId][i]);
+          listFile.add(ff);
+        }
+      }
+      var isContain = (listFile.singleWhere((it) => it!.id == _detailVideo!.id,
+              orElse: () => null)) !=
+          null;
+      if (isContain == false) {
+        listFile.add(_detailVideo);
+      } else {
+        await EasyLoading.showError('Already Liked',
+            duration: const Duration(seconds: 1));
+      }
+      jsonFile[userId] = listFile;
+      //inspect(jsonFile);
+      var savingJson = jsonEncode(jsonFile);
+      prefs.setString('likesVideo', savingJson);
+    }
+    _getLiked();
+  }
+
+  _functionUnlike() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    String likesVideo = prefs.getString("likesVideo") ?? '';
+    if (likesVideo != '') {
+      Map<String, dynamic> jsonFile = jsonDecode(likesVideo);
+      List<DetailVideoModel?> listFile = [];
+      if (jsonFile[userId].length > 0) {
+        for (var i = 0; i < jsonFile[userId].length; i++) {
+          var ff = DetailVideoModel.fromJson(jsonFile[userId][i]);
+          listFile.add(ff);
+        }
+      }
+      listFile.removeWhere((element) => element!.id == _detailVideo!.id);
+      jsonFile[userId] = listFile;
+      //inspect(jsonFile);
+      var savingJson = jsonEncode(jsonFile);
+      prefs.setString('likesVideo', savingJson);
+      setState(() {
+        _isLiked = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
-    inspect(widget.movieType == 'popular'
-        ? widget.popularResults!.id
-        : widget.topRatedResults!.id);
-
+    print(
+        'videoId : ${widget.movieType == 'popular' ? widget.popularResults!.id : widget.topRatedResults!.id}');
     _getVideos();
     _getDetail();
     _getVideoCaster();
@@ -199,7 +295,7 @@ class _DetailPageState extends State<DetailPage> {
                                               fontSize: 12,
                                               color: Colors.grey)),
                                     )
-                                  : Container(),
+                                  : const GenreShimmer(),
                               const SizedBox(height: 5),
                               _detailVideo != null
                                   ? Row(
@@ -227,7 +323,7 @@ class _DetailPageState extends State<DetailPage> {
                                                 color: Colors.grey)),
                                       ],
                                     )
-                                  : Container(),
+                                  : const DurationRatingShimmer(),
                               const SizedBox(height: 20),
                             ],
                           ),
@@ -311,18 +407,38 @@ class _DetailPageState extends State<DetailPage> {
               left: 0,
               child: Container(
                 margin: EdgeInsets.only(top: screenPadding.top),
-                padding: const EdgeInsets.only(left: 20, top: 15),
+                padding: const EdgeInsets.only(left: 20, top: 15, right: 20),
                 width: screenSize.width,
                 child: Align(
                   alignment: Alignment.topLeft,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      size: 25,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          size: 25,
+                        ),
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            if (_detailVideo != null) {
+                              if (_isLiked) {
+                                print("_functionUnlike");
+                                _functionUnlike();
+                              } else {
+                                _functionLike();
+                              }
+                            }
+                          },
+                          child: Icon(
+                            Icons.favorite,
+                            color: _isLiked ? primaryColor : Colors.white,
+                          ))
+                    ],
                   ),
                 ),
               ))

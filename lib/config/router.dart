@@ -7,6 +7,7 @@ import 'package:project1_movie_app/pages/login_page.dart';
 import 'package:project1_movie_app/pages/register_page.dart';
 import 'package:project1_movie_app/pages/sign_up_page.dart';
 import 'package:project1_movie_app/pages/splash_page.dart';
+import 'package:project1_movie_app/pages/tabs_page.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -29,7 +30,7 @@ class RouteGenerator {
             type: PageTransitionType.fade);
       case '/home':
         return PageTransition(
-            child: const HomePage(), type: PageTransitionType.fade);
+            child: const TabsPage(i: 0), type: PageTransitionType.fade);
       case '/detail':
         dynamic param = args;
         return PageTransition(

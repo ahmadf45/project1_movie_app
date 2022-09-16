@@ -24,3 +24,4 @@ MaterialColor createMaterialColor(Color color) {
 final primaryColor = createMaterialColor(const Color(0xFF008300));
 final primaryTextColor = createMaterialColor(const Color(0xFFB2B2B3));
 final bgColor = createMaterialColor(const Color(0xFF1D1D1D));
+const activeColor = Color(0xFF008300);

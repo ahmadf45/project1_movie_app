@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project1_movie_app/bloc/bloc_auth.dart';
+import 'package:project1_movie_app/controller/auth_class.dart';
 import 'package:project1_movie_app/config/variables.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -31,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } else if (_phoneController.text == '') {
       FocusScope.of(context).requestFocus(focusPhone);
     } else {
-      var res = await AuthClass().registerNamePhone(
+      var res = await AuthController().registerNamePhone(
           widget.user, _nameController.text, _phoneController.text);
       if (res) {
         Navigator.pushReplacementNamed(context, '/home');
